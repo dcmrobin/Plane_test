@@ -12,11 +12,17 @@ public class UIManager: MonoBehaviour
     {
         if (NetworkManager.Singleton.StartHost())
         {
-            debugText.text = "Host started";
+            if (debugText != null)
+            {
+                debugText.text = "Host started";
+            }
         }
         else
         {
-            debugText.text = "Host failed to Start";
+            if (debugText != null)
+            {
+                debugText.text = "Host failed to Start";
+            }
         }
     }
 
@@ -24,11 +30,17 @@ public class UIManager: MonoBehaviour
     {
         if (NetworkManager.Singleton.StartServer())
         {
-            debugText.text = "Server started";
+            if (debugText != null)
+            {
+                debugText.text = "Server started";
+            }
         }
         else
         {
-            debugText.text = "Server failed to Start";
+            if (debugText != null)
+            {
+                debugText.text = "Server failed to Start";
+            }
         }
     }
 
@@ -36,11 +48,17 @@ public class UIManager: MonoBehaviour
     {
         if (NetworkManager.Singleton.StartClient())
         {
-            debugText.text = "Client started";
+            if (debugText != null)
+            {
+                debugText.text = "Client started";
+            }
         }
         else
         {
-            debugText.text = "Client failed to Start";
+            if (debugText != null)
+            {
+                debugText.text = "Client failed to Start";
+            }
         }
     }
 }

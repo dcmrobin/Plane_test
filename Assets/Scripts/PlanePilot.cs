@@ -1,6 +1,7 @@
 using UnityEngine;
+using Unity.Netcode;
 
-public class PlanePilot : MonoBehaviour
+public class PlanePilot : NetworkBehaviour
 {
     //public bool usingTerrain = true;
     public float speed = 10.0f;
@@ -8,6 +9,8 @@ public class PlanePilot : MonoBehaviour
     public bool stalled;
 
     private void FixedUpdate() {
+        if (!IsOwner) return;
+
         Vector3 moveCamTo = transform.position - transform.forward * 10.0f + Vector3.up * 5.0f;
         float bias = 0.96f;
         Camera.main.transform.position = Camera.main.transform.position * bias + moveCamTo * (1.0f - bias);
@@ -39,6 +42,8 @@ public class PlanePilot : MonoBehaviour
     }
 
     private void OnTriggerEnter(Collider other) {
+        if (!IsOwner) return;
+
         if (other.gameObject.GetComponent<Terrain>() != null || other.gameObject.CompareTag("Ground"))
         {
             if (!crashed)
