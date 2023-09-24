@@ -33,11 +33,22 @@ public class PlanePilot : NetworkBehaviour
             //transform.Rotate(Input.GetAxis("Vertical") * 2, 0.0f, -Input.GetAxis("Horizontal") * 2);
             if (tailfinLow != null)
             {
-                transform.Rotate(Input.GetAxis("Vertical") * 2, 0.0f, 0.0f);
+                transform.Rotate(Input.GetAxis("Vertical") * 2, 0.0f, 0.0f);// Pitch
             }
             if (wings != null)
             {
-                transform.Rotate(0.0f, 0.0f, -Input.GetAxis("Horizontal") * 2);
+                transform.Rotate(0.0f, 0.0f, -Input.GetAxis("Horizontal") * 2);// Roll
+            }
+            if (tailfinHigh != null)
+            {
+                if (Input.GetKey(KeyCode.Q))
+                {
+                    transform.Rotate(0.0f, 1, 0.0f);// Yaw
+                }
+                else if (Input.GetKey(KeyCode.E))
+                {
+                    transform.Rotate(0.0f, -1, 0.0f);// Yaw
+                }
             }
         }
 
