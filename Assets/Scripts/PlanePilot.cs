@@ -14,6 +14,7 @@ public class PlanePilot : NetworkBehaviour
     public GameObject wings;
     public GameObject tailfinLow;
     public GameObject tailfinHigh;
+    private bool slowingDown;
 
     private void FixedUpdate() {
         if (!IsOwner) return;
@@ -29,7 +30,10 @@ public class PlanePilot : NetworkBehaviour
             {
                 transform.position += transform.forward * Time.deltaTime * speed;
             }
-            speed -= transform.forward.y * Time.deltaTime * 50.0f;
+            if (!slowingDown)
+            {
+                speed -= transform.forward.y * Time.deltaTime * 50.0f;
+            }
             //transform.Rotate(Input.GetAxis("Vertical") * 2, 0.0f, -Input.GetAxis("Horizontal") * 2);
             if (tailfinLow != null)
             {
@@ -49,6 +53,18 @@ public class PlanePilot : NetworkBehaviour
                 {
                     transform.Rotate(0.0f, -1, 0.0f);// Yaw
                 }
+            }
+
+            if (Input.GetKey(KeyCode.Space))
+            {
+                slowingDown = true;
+                speed -= 1;
+                GetComponent<Rigidbody>().isKinematic = false;
+            }
+            else
+            {
+                slowingDown = false;
+                GetComponent<Rigidbody>().isKinematic = true;
             }
         }
 
