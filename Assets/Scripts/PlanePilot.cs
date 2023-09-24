@@ -47,11 +47,11 @@ public class PlanePilot : NetworkBehaviour
             {
                 if (Input.GetKey(KeyCode.Q))
                 {
-                    transform.Rotate(0.0f, 1, 0.0f);// Yaw
+                    transform.Rotate(0.0f, -1, 0.0f);// Yaw
                 }
                 else if (Input.GetKey(KeyCode.E))
                 {
-                    transform.Rotate(0.0f, -1, 0.0f);// Yaw
+                    transform.Rotate(0.0f, 1, 0.0f);// Yaw
                 }
             }
 
