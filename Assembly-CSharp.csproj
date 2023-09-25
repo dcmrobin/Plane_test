@@ -58,6 +58,7 @@
     <Compile Include="Assets\Scripts\PlayerControl.cs" />
     <Compile Include="Assets\Scripts\Damageable.cs" />
     <Compile Include="Assets\Scripts\PlanePilot.cs" />
+    <Compile Include="Assets\Scripts\PlaneBuilder.cs" />
     <Compile Include="Assets\Scripts\UIManager.cs" />
   </ItemGroup>
   <ItemGroup>

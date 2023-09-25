@@ -16,11 +16,11 @@ public class PlanePilot : NetworkBehaviour
     public GameObject wings;
     public GameObject tailfinLow;
     public GameObject tailfinHigh;
-    [Header("Prefabs")]
+    private bool slowingDown;
+    /*[Header("Prefabs")]
     [SerializeField] private GameObject wingsPrefab;
     [SerializeField] private GameObject tailfinLowPrefab;
     [SerializeField] private GameObject tailfinHighPrefab;
-    private bool slowingDown;
 
     private void Start() {
         SpawnWingsServerRpc();
@@ -52,7 +52,7 @@ public class PlanePilot : NetworkBehaviour
         spawnedtailfinHigh.transform.rotation = tailfinHigh.transform.rotation;
         Destroy(tailfinHigh);
         tailfinHigh = spawnedtailfinHigh;
-    }
+    }*/
     private void FixedUpdate() {
         if (!IsOwner) return;
 
