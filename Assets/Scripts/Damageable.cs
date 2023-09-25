@@ -5,22 +5,28 @@ using Unity.Netcode;
 
 public class Damageable : NetworkBehaviour
 {
-    public float health = 10;
+    public int health;
+    public NetworkVariable<int> currentHealth = new NetworkVariable<int>();
+    //public int health = 10;
     public bool canGetDeleted = true;
 
+    private void Start() {
+        currentHealth.Value = health;
+    }
     private void Update() {
-        if (health <= 0)
+        if (currentHealth.Value <= 0)
         {
             if (canGetDeleted)
             {
+                //NetworkObject.Despawn(true);
                 Destroy(gameObject);
             }
         }
     }
 
     [ServerRpc(RequireOwnership = false)]
-    public void GetDamagedServerRpc(float damage)
+    public void GetDamagedServerRpc(int damage)
     {
-        health -= damage;
+        currentHealth.Value -= damage;
     }
 }

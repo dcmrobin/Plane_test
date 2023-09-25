@@ -5,9 +5,10 @@ public class PlanePilot : NetworkBehaviour
 {
     //public bool usingTerrain = true;
     public float speed = 10.0f;
-    public float gunDamage = 2.0f;
+    public int gunDamage = 2;
     public bool crashed;
     public bool stalled;
+    public bool shotDown;
     public LayerMask targetMask;
     RaycastHit hit;
     public GameObject body;
@@ -24,7 +25,7 @@ public class PlanePilot : NetworkBehaviour
         Camera.main.transform.position = Camera.main.transform.position * bias + moveCamTo * (1.0f - bias);
         Camera.main.transform.LookAt(transform.position + transform.forward * 30.0f);
 
-        if (!crashed)
+        if (!crashed && !shotDown)
         {
             if (!stalled)
             {
@@ -59,6 +60,10 @@ public class PlanePilot : NetworkBehaviour
             {
                 slowingDown = true;
                 speed -= 1;
+                if (speed <= 0)
+                {
+                    speed = 0;
+                }
                 GetComponent<Rigidbody>().isKinematic = false;
             }
             else
@@ -70,11 +75,11 @@ public class PlanePilot : NetworkBehaviour
 
         if (speed <= 0.0f)
         {
-            speed = 0.0f;
             stalled = true;
             //speed = 35.0f;//not realistic... the engine should stall
             GetComponent<Rigidbody>().isKinematic = false;
             GetComponent<Rigidbody>().AddForce(transform.forward * speed/2, ForceMode.Impulse);
+            speed = 0.0f;
         }
         else
         {
@@ -84,12 +89,11 @@ public class PlanePilot : NetworkBehaviour
     }
 
     private void Update() {
-        if (body.GetComponent<Damageable>().health <= 0)
+        if (body.GetComponent<Damageable>().currentHealth.Value <= 0)
         {
-            crashed = true;
-            speed = 0;
             GetComponent<Rigidbody>().isKinematic = false;
             GetComponent<Rigidbody>().AddForce(transform.forward * speed/2, ForceMode.Impulse);
+            shotDown = true;
         }
         if (Input.GetMouseButtonDown(0))
         {
