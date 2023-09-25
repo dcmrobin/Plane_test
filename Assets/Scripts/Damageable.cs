@@ -11,7 +11,7 @@ public class Damageable : NetworkBehaviour
     public bool canGetDeleted = true;
 
     private void Start() {
-        currentHealth.Value = health;
+        AssignHealthServerRpc(health);
     }
     private void Update() {
         if (currentHealth.Value <= 0)
@@ -19,7 +19,7 @@ public class Damageable : NetworkBehaviour
             if (canGetDeleted)
             {
                 //NetworkObject.Despawn(true);
-                Destroy(gameObject);
+                DespawnObjectServerRpc();
             }
         }
     }
@@ -28,5 +28,17 @@ public class Damageable : NetworkBehaviour
     public void GetDamagedServerRpc(int damage)
     {
         currentHealth.Value -= damage;
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    public void AssignHealthServerRpc(int amount)
+    {
+        currentHealth.Value = amount;
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    public void DespawnObjectServerRpc()
+    {
+        NetworkObject.Despawn(true);
     }
 }

@@ -11,12 +11,48 @@ public class PlanePilot : NetworkBehaviour
     public bool shotDown;
     public LayerMask targetMask;
     RaycastHit hit;
+    [Header("Bits of the plane")]
     public GameObject body;
     public GameObject wings;
     public GameObject tailfinLow;
     public GameObject tailfinHigh;
+    [Header("Prefabs")]
+    [SerializeField] private GameObject wingsPrefab;
+    [SerializeField] private GameObject tailfinLowPrefab;
+    [SerializeField] private GameObject tailfinHighPrefab;
     private bool slowingDown;
 
+    private void Start() {
+        SpawnWingsServerRpc();
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    public void SpawnWingsServerRpc()
+    {
+        GameObject spawnedwings = Instantiate(wingsPrefab, Vector3.zero, Quaternion.identity);
+        spawnedwings.GetComponent<NetworkObject>().Spawn();
+        spawnedwings.transform.SetParent(transform);
+        spawnedwings.transform.position = wings.transform.position;
+        spawnedwings.transform.rotation = wings.transform.rotation;
+        Destroy(wings);
+        wings = spawnedwings;
+
+        GameObject spawnedtailfinLow = Instantiate(tailfinLowPrefab, Vector3.zero, Quaternion.identity);
+        spawnedtailfinLow.GetComponent<NetworkObject>().Spawn();
+        spawnedtailfinLow.transform.SetParent(transform);
+        spawnedtailfinLow.transform.position = tailfinLow.transform.position;
+        spawnedtailfinLow.transform.rotation = tailfinLow.transform.rotation;
+        Destroy(tailfinLow);
+        tailfinLow = spawnedtailfinLow;
+
+        GameObject spawnedtailfinHigh = Instantiate(tailfinHighPrefab, Vector3.zero, Quaternion.identity);
+        spawnedtailfinHigh.GetComponent<NetworkObject>().Spawn();
+        spawnedtailfinHigh.transform.SetParent(transform);
+        spawnedtailfinHigh.transform.position = tailfinHigh.transform.position;
+        spawnedtailfinHigh.transform.rotation = tailfinHigh.transform.rotation;
+        Destroy(tailfinHigh);
+        tailfinHigh = spawnedtailfinHigh;
+    }
     private void FixedUpdate() {
         if (!IsOwner) return;
 
