@@ -105,7 +105,7 @@ public class PlanePilot : NetworkBehaviour
                 }
             }
 
-            if (Input.GetKey(KeyCode.Space))
+            /*if (Input.GetKey(KeyCode.Space))
             {
                 slowingDown = true;
                 speed -= 1;
@@ -115,11 +115,11 @@ public class PlanePilot : NetworkBehaviour
                 }
                 GetComponent<Rigidbody>().isKinematic = false;
             }
-            else
+            else if (Input.GetKeyUp(KeyCode.Space))
             {
                 slowingDown = false;
                 GetComponent<Rigidbody>().isKinematic = true;
-            }
+            }*/
         }
 
         if (speed <= 0.0f)
@@ -128,6 +128,7 @@ public class PlanePilot : NetworkBehaviour
 
             //speed = 35.0f;//not realistic... the engine should stall
             GetComponent<Rigidbody>().isKinematic = false;
+            GetComponent<Rigidbody>().AddForce(transform.forward * speed/2, ForceMode.Impulse);
             speed = 0.0f;
         }
         else
