@@ -1,13 +1,26 @@
 using UnityEngine;
 using Unity.Netcode;
+using UnityEngine.UI;
+using TMPro;
+using Unity.VisualScripting.FullSerializer;
 
 public class PlanePilot : NetworkBehaviour
 {
     //public bool usingTerrain = true;
+    [Header("Pilot params")]
     public float speed = 10.0f;
+    public GameObject cockpitCam;
+    private Camera mainCam;
+    public GameObject statusTitle;
+    public GameObject stalledText;
+    public GameObject shotdownText;
+    public GameObject crashedText;
     [Header("Gun params")]
     public int gunDamage = 2;
     public LayerMask targetMask;
+    public Image crosshair;
+    public Sprite nottargetedSprite;
+    public Sprite targetedSprite;
     [Header("Plane status")]
     public bool crashed;
     public bool stalled;
@@ -23,14 +36,9 @@ public class PlanePilot : NetworkBehaviour
     public GameObject curtailLow;
     public GameObject curtailHigh;
 
-    /*private void Start() {
-        if (IsOwner)
-        {
-            
-    
-            
-        }
-    }*/
+    private void Start() {
+        mainCam = Camera.main;
+    }
     [ClientRpc]
     public void AssignClientRpc()
     {
@@ -60,8 +68,11 @@ public class PlanePilot : NetworkBehaviour
 
         Vector3 moveCamTo = transform.position - transform.forward * 10.0f + Vector3.up * 5.0f;
         float bias = 0.96f;
-        Camera.main.transform.position = Camera.main.transform.position * bias + moveCamTo * (1.0f - bias);
-        Camera.main.transform.LookAt(transform.position + transform.forward * 30.0f);
+        if (mainCam.enabled)
+        {
+            mainCam.transform.position = mainCam.transform.position * bias + moveCamTo * (1.0f - bias);
+            mainCam.transform.LookAt(transform.position + transform.forward * 30.0f);
+        }
 
         if (!crashed && !shotDown)
         {
@@ -114,9 +125,9 @@ public class PlanePilot : NetworkBehaviour
         if (speed <= 0.0f)
         {
             stalled = true;
+
             //speed = 35.0f;//not realistic... the engine should stall
             GetComponent<Rigidbody>().isKinematic = false;
-            GetComponent<Rigidbody>().AddForce(transform.forward * speed/2, ForceMode.Impulse);
             speed = 0.0f;
         }
         else
@@ -133,10 +144,34 @@ public class PlanePilot : NetworkBehaviour
             GetComponent<Rigidbody>().AddForce(transform.forward * speed/2, ForceMode.Impulse);
             shotDown = true;
         }
+
         if (Input.GetMouseButtonDown(0))
         {
             Fire();
         }
+
+        if (Physics.Raycast(transform.position, transform.TransformDirection(Vector3.forward), out hit, Mathf.Infinity, targetMask))
+        {
+            crosshair.sprite = targetedSprite;
+        }
+        else
+        {
+            crosshair.sprite = nottargetedSprite;
+        }
+
+        // Toggle cockpit cam
+        if (!cockpitCam.activeSelf && Input.GetKeyDown(KeyCode.F1))
+        {
+            cockpitCam.SetActive(true);
+            mainCam.enabled = false;
+        }
+        else if (cockpitCam.activeSelf && Input.GetKeyDown(KeyCode.F1))
+        {
+            cockpitCam.SetActive(false);
+            mainCam.enabled = true;
+        }
+
+        UpdateStatusText();
     }
 
     public void Fire()
@@ -144,6 +179,43 @@ public class PlanePilot : NetworkBehaviour
         if (Physics.Raycast(transform.position, transform.TransformDirection(Vector3.forward), out hit, Mathf.Infinity, targetMask))
         {
             hit.collider.GetComponent<Damageable>().GetDamagedServerRpc(gunDamage);
+        }
+    }
+
+    public void UpdateStatusText()
+    {
+        if (stalled)
+        {
+            stalledText.SetActive(true);
+        }
+        else if (shotDown)
+        {
+            shotdownText.SetActive(true);
+        }
+        else if (crashed)
+        {
+            crashedText.SetActive(true);
+        }
+        else if (!stalled)
+        {
+            stalledText.SetActive(false);
+        }
+        else if (!shotDown)
+        {
+            shotdownText.SetActive(false);
+        }
+        else if (!crashed)
+        {
+            crashedText.SetActive(false);
+        }
+
+        if (!stalled && !shotDown && !crashed)
+        {
+            statusTitle.SetActive(false);
+        }
+        else
+        {
+            statusTitle.SetActive(true);
         }
     }
 
