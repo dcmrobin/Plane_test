@@ -841,10 +841,10 @@ PlayerSettings:
   apiCompatibilityLevel: 6
   activeInputHandler: 0
   windowsGamepadBackendHint: 0
-  cloudProjectId: 9b927024-dbc5-4ea0-a2c6-1d6969ff876e
+  cloudProjectId: 8046d5e7-d347-4263-b49a-930d913da75d
   framebufferDepthMemorylessMode: 0
   qualitySettingsNames: []
-  projectName: Plane test
+  projectName: Plane
   organizationId: dcmrobin
   cloudEnabled: 0
   legacyClampBlendShapeWeights: 0
