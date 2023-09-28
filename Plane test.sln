@@ -1,6 +1,10 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleRelayUTP", "SimpleRelayUTP.csproj", "{3A437BEA-2FE3-88E8-9654-904D495F52D3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleRelay", "SimpleRelay.csproj", "{DA65B555-E893-826C-6AFB-50B744F6A005}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Assembly-CSharp", "Assembly-CSharp.csproj", "{A33A165E-9F3F-1552-DB23-029305990B4B}"
 EndProject
 Global
@@ -9,6 +13,14 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3A437BEA-2FE3-88E8-9654-904D495F52D3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3A437BEA-2FE3-88E8-9654-904D495F52D3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3A437BEA-2FE3-88E8-9654-904D495F52D3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3A437BEA-2FE3-88E8-9654-904D495F52D3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DA65B555-E893-826C-6AFB-50B744F6A005}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DA65B555-E893-826C-6AFB-50B744F6A005}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DA65B555-E893-826C-6AFB-50B744F6A005}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DA65B555-E893-826C-6AFB-50B744F6A005}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A33A165E-9F3F-1552-DB23-029305990B4B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A33A165E-9F3F-1552-DB23-029305990B4B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A33A165E-9F3F-1552-DB23-029305990B4B}.Release|Any CPU.ActiveCfg = Release|Any CPU
