@@ -13,6 +13,11 @@ using System;
 public class LobbyController : MonoBehaviour
 {
     public TMP_InputField lobbyCodeInputField;
+    public TMP_InputField nicknameInputField;
+    public TMP_Text codeText;
+    public TMP_Text clientcodeText;
+    public GameObject playerListContent;
+    public GameObject clientplayerListContent;
     private Lobby hostLobby;
     private Lobby joinedLobby;
     private float heartbeatTimer;
@@ -29,18 +34,21 @@ public class LobbyController : MonoBehaviour
 
         await AuthenticationService.Instance.SignInAnonymouslyAsync();
 
-        playerName = "Player" + UnityEngine.Random.Range(10, 99);
+        playerName = nicknameInputField.text;
         Debug.Log(playerName);
     }
 
     private void Update() {
-        if (lobbyCodeInputField.text != "")
+        if (lobbyCodeInputField.gameObject != null && lobbyCodeInputField.GetComponentInParent<Button>() != null && lobbyCodeInputField != null)
         {
-            lobbyCodeInputField.GetComponentInParent<Button>().interactable = true;
-        }
-        else
-        {
-            lobbyCodeInputField.GetComponentInParent<Button>().interactable = false;
+            if (lobbyCodeInputField.text != "")
+            {
+                lobbyCodeInputField.GetComponentInParent<Button>().interactable = true;
+            }
+            else
+            {
+                lobbyCodeInputField.GetComponentInParent<Button>().interactable = false;
+            }
         }
 
         HandleLobbyHeartbeat();
@@ -77,8 +85,8 @@ public class LobbyController : MonoBehaviour
 
                 if (joinedLobby.Data[KEY_START_GAME].Value != "0")
                 {
-                    //if (!IsLobbyHost())
-                    //{
+                    if (!IsLobbyHost())
+                    {
                         try
                         {
                             TestRelay.Instance.JoinRelay(joinedLobby.Data[KEY_START_GAME].Value);
@@ -87,7 +95,7 @@ public class LobbyController : MonoBehaviour
                         {
                             Debug.Log(e);
                         }
-                    //}
+                    }
 
                     joinedLobby = null;
 
@@ -101,7 +109,7 @@ public class LobbyController : MonoBehaviour
     {
         try {
             string lobbyName = "MyLobby";
-            int maxPlayers = 4;
+            int maxPlayers = 10;
             CreateLobbyOptions createLobbyOptions = new CreateLobbyOptions {
                 IsPrivate = false,
                 Player = GetPlayer(),
@@ -115,8 +123,12 @@ public class LobbyController : MonoBehaviour
             hostLobby = lobby;
             joinedLobby = hostLobby;
 
-            PrintPlayers(hostLobby);
+            UpdatePlayerName(nicknameInputField.text);
+
+            PrintPlayers(joinedLobby);
             Debug.Log("Created Lobby! " + lobby.Name + " " + lobby.MaxPlayers + " " + lobby.Id + " " + lobby.LobbyCode);
+            codeText.text = lobby.LobbyCode;
+            clientcodeText.text = lobby.LobbyCode;
         } catch (LobbyServiceException e) {
             Debug.Log(e);
         }
@@ -160,7 +172,9 @@ public class LobbyController : MonoBehaviour
 
             Debug.Log("Joined Lobby with code " + lobbyCodeInputField.text);
 
-            PrintPlayers(lobby);
+            UpdatePlayerName(nicknameInputField.text);
+
+            PrintPlayers(joinedLobby);
         }
         catch (LobbyServiceException e)
         {
@@ -172,7 +186,12 @@ public class LobbyController : MonoBehaviour
     {
         try
         {
-            await LobbyService.Instance.QuickJoinLobbyAsync();
+            Lobby lobby = await LobbyService.Instance.QuickJoinLobbyAsync();
+            joinedLobby = lobby;
+
+            UpdatePlayerName(nicknameInputField.text);
+
+            PrintPlayers(joinedLobby);
         }
         catch (LobbyServiceException e)
         {
@@ -190,7 +209,7 @@ public class LobbyController : MonoBehaviour
         };
     }
 
-    private void PrintPlayers()
+    public void PrintPlayers()
     {
         PrintPlayers(joinedLobby);
     }
@@ -198,8 +217,26 @@ public class LobbyController : MonoBehaviour
     private void PrintPlayers(Lobby lobby)
     {
         Debug.Log("Players in Lobby " + lobby.Name);
+        for (int i = 0; i < playerListContent.transform.childCount; i++)
+        {
+            Destroy(playerListContent.transform.GetChild(i).gameObject);
+        }
+        for (int i = 0; i < clientplayerListContent.transform.childCount; i++)
+        {
+            Destroy(clientplayerListContent.transform.GetChild(i).gameObject);
+        }
         foreach (Player player in lobby.Players)
         {
+            GameObject playerElement = Instantiate(codeText.gameObject, playerListContent.transform);
+            playerElement.GetComponent<TMP_Text>().text = player.Data["PlayerName"].Value;
+            playerElement.GetComponent<TMP_Text>().color = Color.black;
+            playerElement.GetComponent<TMP_Text>().enableWordWrapping = false;
+
+            GameObject clientplayerElement = Instantiate(clientcodeText.gameObject, clientplayerListContent.transform);
+            clientplayerElement.GetComponent<TMP_Text>().text = player.Data["PlayerName"].Value;
+            clientplayerElement.GetComponent<TMP_Text>().color = Color.black;
+            clientplayerElement.GetComponent<TMP_Text>().enableWordWrapping = false;
+
             Debug.Log(player.Id + " " + player.Data["PlayerName"].Value);
         }
     }
@@ -208,7 +245,14 @@ public class LobbyController : MonoBehaviour
     {
         try
         {
-            playerName = newPlayerName;
+            if (newPlayerName != "")
+            {
+                playerName = newPlayerName;
+            }
+            else
+            {
+                playerName = "[null]";
+            }
             await LobbyService.Instance.UpdatePlayerAsync(joinedLobby.Id, AuthenticationService.Instance.PlayerId, new UpdatePlayerOptions {
                 Data = new Dictionary<string, PlayerDataObject> {
                     { "PlayerName", new PlayerDataObject(PlayerDataObject.VisibilityOptions.Member, playerName) }
@@ -221,7 +265,7 @@ public class LobbyController : MonoBehaviour
         }
     }
 
-    private async void LeaveLobby()
+    public async void LeaveLobby()
     {
         try
         {
@@ -233,7 +277,7 @@ public class LobbyController : MonoBehaviour
         }
     }
 
-    private async void KickPlayer()
+    public async void KickPlayer()
     {
         try
         {
@@ -245,7 +289,7 @@ public class LobbyController : MonoBehaviour
         }
     }
 
-    private async void MigrateLobbyHost()
+    public async void MigrateLobbyHost()
     {
         try
         {
@@ -255,7 +299,7 @@ public class LobbyController : MonoBehaviour
             });
             joinedLobby = hostLobby;
 
-            PrintPlayers(hostLobby);
+            PrintPlayers(joinedLobby);
         }
         catch (LobbyServiceException e)
         {
@@ -263,7 +307,7 @@ public class LobbyController : MonoBehaviour
         }
     }
 
-    private async void DeleteLobby()
+    public async void DeleteLobby()
     {
         try
         {
@@ -277,8 +321,8 @@ public class LobbyController : MonoBehaviour
 
     public async void StartGame()
     {
-        //if (IsLobbyHost())
-        //{
+        if (IsLobbyHost())
+        {
             try
             {
                 Debug.Log("StartGame");
@@ -297,6 +341,31 @@ public class LobbyController : MonoBehaviour
             {
                 Debug.Log(e);
             }
-        //}
+        }
+    }
+
+    public void RefreshLobby()
+    {
+        UpdatePlayerName(nicknameInputField.text);
+        PrintPlayers();
+        clientcodeText.text = joinedLobby.LobbyCode;
+        codeText.text = joinedLobby.LobbyCode;
+    }
+
+    public bool IsLobbyHost()
+    {
+        // Get the current player object
+        Player player = GetPlayer();
+        // Compare the player ID with the lobby host ID
+        if (player.Id == joinedLobby.HostId)
+        {
+            // The player is the host
+            return true;
+        }
+        else
+        {
+            // The player is not the host
+            return false;
+        }
     }
 }

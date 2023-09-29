@@ -10,10 +10,12 @@ using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
 using Unity.Networking.Transport.Relay;
 using System.Threading.Tasks;
+using TMPro;
 
 public class TestRelay : MonoBehaviour
 {
     public static TestRelay Instance { get; private set; }
+    public GameObject[] thingsToDeactivateOnStart;
     private void Awake() {
         Instance = this;
     }
@@ -62,6 +64,11 @@ public class TestRelay : MonoBehaviour
             RelayServerData relayServerData = new RelayServerData(joinAllocation, "dtls");
 
             NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(relayServerData);
+
+            for (int i = 0; i < thingsToDeactivateOnStart.Length; i++)
+            {
+                thingsToDeactivateOnStart[i].SetActive(false);
+            }
 
             NetworkManager.Singleton.StartClient();
         }
