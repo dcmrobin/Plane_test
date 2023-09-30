@@ -161,15 +161,18 @@ public class PlanePilot : NetworkBehaviour
         }
 
         // Toggle cockpit cam
-        if (!cockpitCam.activeSelf && Input.GetKeyDown(KeyCode.F1))
+        if (IsOwner)
         {
-            cockpitCam.SetActive(true);
-            mainCam.enabled = false;
-        }
-        else if (cockpitCam.activeSelf && Input.GetKeyDown(KeyCode.F1))
-        {
-            cockpitCam.SetActive(false);
-            mainCam.enabled = true;
+            if (!cockpitCam.activeSelf && Input.GetKeyDown(KeyCode.F1))
+            {
+                cockpitCam.SetActive(true);
+                mainCam.enabled = false;
+            }
+            else if (cockpitCam.activeSelf && Input.GetKeyDown(KeyCode.F1))
+            {
+                cockpitCam.SetActive(false);
+                mainCam.enabled = true;
+            }
         }
 
         UpdateStatusText();

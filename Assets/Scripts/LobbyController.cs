@@ -85,8 +85,8 @@ public class LobbyController : MonoBehaviour
 
                 if (joinedLobby.Data[KEY_START_GAME].Value != "0")
                 {
-                    if (!IsLobbyHost())
-                    {
+                    //if (!IsLobbyHost())
+                    //{
                         try
                         {
                             TestRelay.Instance.JoinRelay(joinedLobby.Data[KEY_START_GAME].Value);
@@ -95,7 +95,7 @@ public class LobbyController : MonoBehaviour
                         {
                             Debug.Log(e);
                         }
-                    }
+                    //}
 
                     joinedLobby = null;
 
@@ -321,8 +321,8 @@ public class LobbyController : MonoBehaviour
 
     public async void StartGame()
     {
-        if (IsLobbyHost())
-        {
+        //if (IsLobbyHost())
+        //{
             try
             {
                 Debug.Log("StartGame");
@@ -341,7 +341,7 @@ public class LobbyController : MonoBehaviour
             {
                 Debug.Log(e);
             }
-        }
+        //}
     }
 
     public void RefreshLobby()
