@@ -19,6 +19,7 @@ public class PlanePilot : NetworkBehaviour
     public GameObject shotdownText;
     public GameObject crashedText;
     public GameObject respawnButton;
+    public GameObject LockGuide;
     [Header("Gun params")]
     public int gunDamage = 2;
     public LayerMask targetMask;
@@ -195,6 +196,10 @@ public class PlanePilot : NetworkBehaviour
             else if (cockpitCam.activeSelf && Input.GetKeyDown(KeyCode.F1))
             {
                 cockpitCam.SetActive(false);
+                for (int i = 0; i < allPlayers.Length; i++)
+                {
+                    allPlayers[i].GetComponent<Outline>().enabled = false;
+                }
                 mainCam.enabled = true;
             }
         }
@@ -330,8 +335,26 @@ public class PlanePilot : NetworkBehaviour
         else
         {
             closestPlayers[index].GetComponent<Outline>().OutlineColor = new Color(100, 0, 0);
+            LockGuide.SetActive(true);
+            Vector3 targetScreenPosition = cockpitCam.GetComponent<Camera>().WorldToScreenPoint(closestPlayers[index].transform.position);
+            if (targetScreenPosition.z > 0f)
+            {
+                targetScreenPosition.x = Mathf.Clamp01(targetScreenPosition.x);
+                targetScreenPosition.y = Mathf.Clamp01(targetScreenPosition.y);
+            }
+            else
+            {
+                targetScreenPosition.x = -1000;
+                targetScreenPosition.y = -1000;
+            }
+
+            // Convert the modified viewport position back to screen coordinates.
+            targetScreenPosition.x *= Screen.width;
+            targetScreenPosition.y *= Screen.height;
+            LockGuide.transform.position = targetScreenPosition;
             if (Input.GetKeyDown(KeyCode.L))
             {
+                LockGuide.SetActive(false);
                 index = 0;
                 lockedOn = false;
             }
