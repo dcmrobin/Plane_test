@@ -38,6 +38,19 @@ public class PlanePilot : NetworkBehaviour
 
     private void Start() {
         mainCam = Camera.main;
+        //GameObject.Find("PlaneBuilder").GetComponent<PlaneBuilder>().GenerateWings(gameObject);
+        Invoke("CheckForWings", 1);
+    }
+    void CheckForWings()
+    {
+        if (wings == null && tailfinLow == null && tailfinHigh ==  null)
+        {
+            if (NetworkManager.Singleton.IsServer)
+            {
+                GameObject.Find("PlaneBuilder").GetComponent<PlaneBuilder>().GenerateWings(gameObject);
+            }
+            AssignClientRpc();
+        }
     }
     [ClientRpc]
     public void AssignClientRpc()

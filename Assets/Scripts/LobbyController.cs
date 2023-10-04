@@ -12,6 +12,8 @@ using System;
 
 public class LobbyController : MonoBehaviour
 {
+    public GameObject menuUI;
+    public GameObject clientLobbyUI;
     public TMP_InputField lobbyCodeInputField;
     public TMP_InputField nicknameInputField;
     public TMP_Text codeText;
@@ -22,6 +24,7 @@ public class LobbyController : MonoBehaviour
     private Lobby joinedLobby;
     private float heartbeatTimer;
     private float lobbyUpdateTimer;
+    private int numOfLobbies;
     private string playerName;
     public const string KEY_START_GAME = "Start";
     public event EventHandler<EventArgs> OnGameStarted;
@@ -129,6 +132,7 @@ public class LobbyController : MonoBehaviour
             Debug.Log("Created Lobby! " + lobby.Name + " " + lobby.MaxPlayers + " " + lobby.Id + " " + lobby.LobbyCode);
             codeText.text = lobby.LobbyCode;
             clientcodeText.text = lobby.LobbyCode;
+            RefreshLobby();
         } catch (LobbyServiceException e) {
             Debug.Log(e);
         }
@@ -149,6 +153,7 @@ public class LobbyController : MonoBehaviour
             QueryResponse queryResponse = await Lobbies.Instance.QueryLobbiesAsync(queryLobbiesOptions);
     
             Debug.Log("Lobbies found: " + queryResponse.Results.Count);
+            numOfLobbies = queryResponse.Results.Count;
             foreach (Lobby lobby in queryResponse.Results)
             {
                 Debug.Log(lobby.Name + " " + lobby.MaxPlayers);
@@ -175,6 +180,7 @@ public class LobbyController : MonoBehaviour
             UpdatePlayerName(nicknameInputField.text);
 
             PrintPlayers(joinedLobby);
+            RefreshLobby();
         }
         catch (LobbyServiceException e)
         {
@@ -184,18 +190,25 @@ public class LobbyController : MonoBehaviour
 
     public async void QuickJoinLobby()
     {
-        try
+        ListLobbies();
+        if (numOfLobbies > 0)
         {
-            Lobby lobby = await LobbyService.Instance.QuickJoinLobbyAsync();
-            joinedLobby = lobby;
-
-            UpdatePlayerName(nicknameInputField.text);
-
-            PrintPlayers(joinedLobby);
-        }
-        catch (LobbyServiceException e)
-        {
-            Debug.Log(e);
+            try
+            {
+                menuUI.SetActive(false);
+                clientLobbyUI.SetActive(true);
+                Lobby lobby = await LobbyService.Instance.QuickJoinLobbyAsync();
+                joinedLobby = lobby;
+    
+                UpdatePlayerName(nicknameInputField.text);
+    
+                PrintPlayers(joinedLobby);
+                RefreshLobby();
+            }
+            catch (LobbyServiceException e)
+            {
+                Debug.Log(e);
+            }
         }
     }
 
@@ -229,11 +242,13 @@ public class LobbyController : MonoBehaviour
         {
             GameObject playerElement = Instantiate(codeText.gameObject, playerListContent.transform);
             playerElement.GetComponent<TMP_Text>().text = player.Data["PlayerName"].Value;
+            playerElement.GetComponent<TMP_Text>().alignment = TextAlignmentOptions.Left;
             playerElement.GetComponent<TMP_Text>().color = Color.black;
             playerElement.GetComponent<TMP_Text>().enableWordWrapping = false;
 
             GameObject clientplayerElement = Instantiate(clientcodeText.gameObject, clientplayerListContent.transform);
             clientplayerElement.GetComponent<TMP_Text>().text = player.Data["PlayerName"].Value;
+            clientplayerElement.GetComponent<TMP_Text>().alignment = TextAlignmentOptions.Left;
             clientplayerElement.GetComponent<TMP_Text>().color = Color.black;
             clientplayerElement.GetComponent<TMP_Text>().enableWordWrapping = false;
 

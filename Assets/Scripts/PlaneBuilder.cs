@@ -17,23 +17,28 @@ public class PlaneBuilder : NetworkBehaviour
         if (NetworkManager.Singleton.IsServer)
         {
             GameObject parentObject = NetworkManager.Singleton.ConnectedClients[clientId].PlayerObject.gameObject;
-            PlanePilot playerScript = parentObject.GetComponent<PlanePilot>();
-
-            GameObject spawnedwings = Instantiate(wingsPrefab, Vector3.zero, Quaternion.identity);
-            spawnedwings.GetComponent<NetworkObject>().SpawnWithOwnership(clientId);
-            spawnedwings.transform.SetParent(parentObject.transform);
-            //playerScript.curwings = spawnedwings;
-
-            GameObject spawnedtailfinLow = Instantiate(tailfinLowPrefab, Vector3.zero, Quaternion.identity);
-            spawnedtailfinLow.GetComponent<NetworkObject>().SpawnWithOwnership(clientId);
-            spawnedtailfinLow.transform.SetParent(parentObject.transform);
-            //playerScript.curtailLow = spawnedtailfinLow;
-
-            GameObject spawnedtailfinHigh = Instantiate(tailfinHighPrefab, Vector3.zero, Quaternion.identity);
-            spawnedtailfinHigh.GetComponent<NetworkObject>().SpawnWithOwnership(clientId);
-            spawnedtailfinHigh.transform.SetParent(parentObject.transform);
-            //playerScript.curtailHigh = spawnedtailfinHigh;
-            playerScript.AssignClientRpc();
+            GenerateWings(parentObject);
         }
+    }
+
+    public void GenerateWings(GameObject plane)
+    {
+        PlanePilot playerScript = plane.GetComponent<PlanePilot>();
+
+        GameObject spawnedwings = Instantiate(wingsPrefab, Vector3.zero, Quaternion.identity);
+        spawnedwings.GetComponent<NetworkObject>().SpawnWithOwnership(plane.GetComponent<NetworkObject>().OwnerClientId);
+        spawnedwings.transform.SetParent(plane.transform);
+        //playerScript.curwings = spawnedwings;
+
+        GameObject spawnedtailfinLow = Instantiate(tailfinLowPrefab, Vector3.zero, Quaternion.identity);
+        spawnedtailfinLow.GetComponent<NetworkObject>().SpawnWithOwnership(plane.GetComponent<NetworkObject>().OwnerClientId);
+        spawnedtailfinLow.transform.SetParent(plane.transform);
+        //playerScript.curtailLow = spawnedtailfinLow;
+
+        GameObject spawnedtailfinHigh = Instantiate(tailfinHighPrefab, Vector3.zero, Quaternion.identity);
+        spawnedtailfinHigh.GetComponent<NetworkObject>().SpawnWithOwnership(plane.GetComponent<NetworkObject>().OwnerClientId);
+        spawnedtailfinHigh.transform.SetParent(plane.transform);
+        //playerScript.curtailHigh = spawnedtailfinHigh;
+        playerScript.AssignClientRpc();
     }
 }
