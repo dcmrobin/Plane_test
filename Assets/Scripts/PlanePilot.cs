@@ -4,6 +4,9 @@ using UnityEngine.UI;
 using TMPro;
 using Unity.VisualScripting.FullSerializer;
 using Unity.Mathematics;
+using System;
+using System.Collections;
+using System.Collections.Generic;
 
 public class PlanePilot : NetworkBehaviour
 {
@@ -26,7 +29,8 @@ public class PlanePilot : NetworkBehaviour
     public bool crashed;
     public bool stalled;
     public bool shotDown;
-    private bool slowingDown;
+    public bool slowingDown;
+    public bool lockedOn;
     RaycastHit hit;
     [Header("Bits of the plane")]
     public GameObject body;
@@ -39,10 +43,14 @@ public class PlanePilot : NetworkBehaviour
     public GameObject cockpitCam;
     private Camera mainCam;
 
+    private GameObject[] allPlayers;
+    private List<GameObject> closestPlayers = new List<GameObject>();
+    private int index = 0;
+
     private void Start() {
         mainCam = Camera.main;
         //GameObject.Find("PlaneBuilder").GetComponent<PlaneBuilder>().GenerateWings(gameObject);
-        Invoke("CheckForWings", 1);
+        Invoke("CheckForWings", 2);
     }
     void CheckForWings()
     {
@@ -192,6 +200,10 @@ public class PlanePilot : NetworkBehaviour
         }
 
         UpdateStatusText();
+        if (cockpitCam.activeSelf)
+        {
+            UpdateLock();
+        }
     }
 
     public void Fire()
@@ -237,6 +249,92 @@ public class PlanePilot : NetworkBehaviour
         else
         {
             statusTitle.SetActive(true);
+        }
+    }
+
+    public void UpdateLock()
+    {
+        float maxDist = 1000;
+        if (!lockedOn)
+        {
+            allPlayers = GameObject.FindGameObjectsWithTag("Player");
+            for (int i = 0; i < allPlayers.Length; i++)
+            {
+                if (allPlayers[i] != gameObject)
+                {
+                    if (Vector3.Distance(allPlayers[i].transform.position, transform.position) < maxDist)
+                    {
+                        if (!closestPlayers.Contains(allPlayers[i]))
+                        {
+                            closestPlayers.Add(allPlayers[i]);
+                        }
+                    }
+                }
+            }
+            for (int i = 0; i < closestPlayers.Count; i++)
+            {
+                if (Vector3.Distance(closestPlayers[i].transform.position, transform.position) > maxDist)
+                {
+                    if (closestPlayers[i].GetComponent<Outline>() != null)
+                    {
+                        closestPlayers[i].GetComponent<Outline>().enabled = false;
+                    }
+                    else
+                    {
+                        closestPlayers[i].AddComponent<Outline>().enabled = false;
+                    }
+                    closestPlayers.Remove(closestPlayers[i]);
+                }
+            }
+    
+            if (closestPlayers.Count > 0)
+            {
+                if (closestPlayers[index].GetComponent<Outline>() != null)
+                {
+                    closestPlayers[index].GetComponent<Outline>().enabled = true;
+                }
+                else
+                {
+                    closestPlayers[index].AddComponent<Outline>().enabled = true;
+                }
+                closestPlayers[index].GetComponent<Outline>().OutlineColor = Color.red;
+
+                if (Input.GetKeyDown(KeyCode.T))
+                {
+                    if (index + 1 < closestPlayers.Count)
+                    {
+                        closestPlayers[index].GetComponent<Outline>().enabled = false;
+                        index++;
+                        closestPlayers[index].GetComponent<Outline>().enabled = true;
+                        closestPlayers[index].GetComponent<Outline>().OutlineColor = Color.red;
+                    }
+                    else if (index + 1 >= closestPlayers.Count)
+                    {
+                        for (int i = 0; i < closestPlayers.Count; i++)
+                        {
+                            closestPlayers[index].GetComponent<Outline>().enabled = false;
+                        }
+                        index = 0;
+                    }
+                }
+                else if (Input.GetKeyDown(KeyCode.L))
+                {
+                    lockedOn = true;
+                }
+            }
+            else
+            {
+                index = 0;
+            }
+        }
+        else
+        {
+            closestPlayers[index].GetComponent<Outline>().OutlineColor = new Color(100, 0, 0);
+            if (Input.GetKeyDown(KeyCode.L))
+            {
+                index = 0;
+                lockedOn = false;
+            }
         }
     }
 

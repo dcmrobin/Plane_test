@@ -11,7 +11,7 @@
     <RootNamespace></RootNamespace>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <AssemblyName>Assembly-CSharp</AssemblyName>
+    <AssemblyName>Assembly-CSharp-firstpass</AssemblyName>
     <TargetFramework>netstandard2.0</TargetFramework>
     <BaseDirectory>.</BaseDirectory>
   </PropertyGroup>
@@ -45,7 +45,7 @@
   <PropertyGroup>
     <UnityProjectGenerator>Package</UnityProjectGenerator>
     <UnityProjectGeneratorVersion>2.0.20</UnityProjectGeneratorVersion>
-    <UnityProjectType>Game:1</UnityProjectType>
+    <UnityProjectType>GamePlugins:3</UnityProjectType>
     <UnityBuildTarget>StandaloneWindows64:19</UnityBuildTarget>
     <UnityVersion>2022.3.10f1</UnityVersion>
   </PropertyGroup>
@@ -55,36 +55,12 @@
     <Analyzer Include="C:\Program Files\Unity\Hub\Editor\2022.3.10f1\Editor\Data\Tools\Unity.SourceGenerators\Unity.Properties.SourceGenerator.dll" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\Scripts\TestRelay.cs" />
-    <Compile Include="Assets\Scripts\LobbyController.cs" />
-    <Compile Include="Assets\Scripts\PlayerControl.cs" />
-    <Compile Include="Assets\Scripts\Damageable.cs" />
-    <Compile Include="Assets\Scripts\PlanePilot.cs" />
-    <Compile Include="Assets\Scripts\PlaneBuilder.cs" />
-    <Compile Include="Assets\Scripts\UIManager.cs" />
+    <Compile Include="Assets\Plugins\QuickOutline\Scripts\Outline.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />
-    <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Mobile Overlay.shader" />
-    <None Include="Assets\TextMesh Pro\Shaders\TMP_Bitmap.shader" />
-    <None Include="Assets\TextMesh Pro\Shaders\TMPro_Mobile.cginc" />
-    <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF SSD.shader" />
-    <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Surface-Mobile.shader" />
-    <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Surface.shader" />
-    <None Include="Assets\TextMesh Pro\Sprites\EmojiOne Attribution.txt" />
-    <None Include="Assets\TextMesh Pro\Shaders\TMP_Bitmap-Custom-Atlas.shader" />
-    <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF.shader" />
-    <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Mobile SSD.shader" />
-    <None Include="Assets\TextMesh Pro\Resources\LineBreaking Leading Characters.txt" />
-    <None Include="Assets\TextMesh Pro\Shaders\TMPro_Properties.cginc" />
-    <None Include="Assets\TextMesh Pro\Shaders\TMPro_Surface.cginc" />
-    <None Include="Assets\TextMesh Pro\Resources\LineBreaking Following Characters.txt" />
-    <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Mobile Masking.shader" />
-    <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF Overlay.shader" />
-    <None Include="Assets\TextMesh Pro\Shaders\TMP_Bitmap-Mobile.shader" />
-    <None Include="Assets\TextMesh Pro\Fonts\LiberationSans - OFL.txt" />
-    <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Mobile.shader" />
-    <None Include="Assets\TextMesh Pro\Shaders\TMP_Sprite.shader" />
+    <None Include="Assets\Plugins\QuickOutline\Resources\Shaders\OutlineMask.shader" />
+    <None Include="Assets\Plugins\QuickOutline\Readme.txt" />
+    <None Include="Assets\Plugins\QuickOutline\Resources\Shaders\OutlineFill.shader" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="UnityEngine">
@@ -917,6 +893,5 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="Assembly-CSharp-firstpass.csproj" />
   </ItemGroup>
 </Project>
