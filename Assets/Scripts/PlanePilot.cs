@@ -3,18 +3,19 @@ using Unity.Netcode;
 using UnityEngine.UI;
 using TMPro;
 using Unity.VisualScripting.FullSerializer;
+using Unity.Mathematics;
 
 public class PlanePilot : NetworkBehaviour
 {
     //public bool usingTerrain = true;
     [Header("Pilot params")]
     public float speed = 10.0f;
-    public GameObject cockpitCam;
-    private Camera mainCam;
+    [Header("UI")]
     public GameObject statusTitle;
     public GameObject stalledText;
     public GameObject shotdownText;
     public GameObject crashedText;
+    public GameObject respawnButton;
     [Header("Gun params")]
     public int gunDamage = 2;
     public LayerMask targetMask;
@@ -25,16 +26,18 @@ public class PlanePilot : NetworkBehaviour
     public bool crashed;
     public bool stalled;
     public bool shotDown;
+    private bool slowingDown;
     RaycastHit hit;
     [Header("Bits of the plane")]
     public GameObject body;
     public GameObject wings;
     public GameObject tailfinLow;
     public GameObject tailfinHigh;
-    private bool slowingDown;
     public GameObject curwings;
     public GameObject curtailLow;
     public GameObject curtailHigh;
+    public GameObject cockpitCam;
+    private Camera mainCam;
 
     private void Start() {
         mainCam = Camera.main;
@@ -211,6 +214,7 @@ public class PlanePilot : NetworkBehaviour
         }
         else if (crashed)
         {
+            respawnButton.SetActive(true);
             crashedText.SetActive(true);
         }
         else if (!stalled)
@@ -234,6 +238,18 @@ public class PlanePilot : NetworkBehaviour
         {
             statusTitle.SetActive(true);
         }
+    }
+
+    public void Respawn()
+    {
+        transform.position = Vector3.zero;
+        transform.rotation = Quaternion.Euler(10, 0, 0);
+        stalled = false;
+        shotDown = false;
+        crashed = false;
+        crashedText.SetActive(false);
+        shotdownText.SetActive(false);
+        stalledText.SetActive(false);
     }
 
     private void OnTriggerEnter(Collider other) {
