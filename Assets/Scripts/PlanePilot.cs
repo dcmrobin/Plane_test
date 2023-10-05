@@ -51,7 +51,8 @@ public class PlanePilot : NetworkBehaviour
     private void Start() {
         mainCam = Camera.main;
         //GameObject.Find("PlaneBuilder").GetComponent<PlaneBuilder>().GenerateWings(gameObject);
-        Invoke("CheckForWings", 3);
+        CheckForWings();
+        Invoke("CheckForWings", 2);
     }
     void CheckForWings()
     {
@@ -196,11 +197,11 @@ public class PlanePilot : NetworkBehaviour
             else if (cockpitCam.activeSelf && Input.GetKeyDown(KeyCode.F1))
             {
                 cockpitCam.SetActive(false);
+                mainCam.enabled = true;
                 for (int i = 0; i < allPlayers.Length; i++)
                 {
                     allPlayers[i].GetComponent<Outline>().enabled = false;
                 }
-                mainCam.enabled = true;
             }
         }
 
