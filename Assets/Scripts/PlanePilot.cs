@@ -47,6 +47,8 @@ public class PlanePilot : NetworkBehaviour
     private GameObject[] allPlayers;
     private List<GameObject> closestPlayers = new List<GameObject>();
     private int index = 0;
+    float stabilizationTime = 0f;
+    float stabilizationThreshold = 5f;
 
     private void Start() {
         mainCam = Camera.main;
@@ -337,47 +339,61 @@ public class PlanePilot : NetworkBehaviour
         {
             closestPlayers[index].GetComponent<Outline>().OutlineColor = new Color(100, 0, 0);
             LockGuide.SetActive(true);
-           Vector3 targetWorldPosition = closestPlayers[index].transform.position;
+            Vector3 targetWorldPosition = closestPlayers[index].transform.position;
 
-            // Get the camera's forward vector and the direction to the target.
             Vector3 cameraForward = cockpitCam.transform.forward;
             Vector3 toTarget = targetWorldPosition - cockpitCam.transform.position;
 
-            // Check if the target is in front of the camera.
             float dotProduct = Vector3.Dot(cameraForward, toTarget);
 
-            if (dotProduct > 0)
+            if (dotProduct > -50)
             {
-                // Convert the target's world position to screen coordinates.
                 Vector3 targetScreenPosition = cockpitCam.GetComponent<Camera>().WorldToScreenPoint(targetWorldPosition);
-
-                // Define a padding value to keep some margin from the screen edges.
-                float padding = 10f; // Adjust this value as needed.
-
-                // Get the screen boundaries in pixels.
+                float padding = 10f;
                 Rect screenBounds = new Rect(padding, padding, Screen.width - 2 * padding, Screen.height - 2 * padding);
 
-                // Clamp the targetScreenPosition to be within the screen boundaries.
                 targetScreenPosition.x = Mathf.Clamp(targetScreenPosition.x, screenBounds.x, screenBounds.xMax);
                 targetScreenPosition.y = Mathf.Clamp(targetScreenPosition.y, screenBounds.y, screenBounds.yMax);
 
                 LockGuide.transform.position = targetScreenPosition;
+
+                // Check if the LockGuide is stable.
+                if (IsLockGuideStable(cockpitCam.GetComponent<Camera>().WorldToScreenPoint(targetWorldPosition)))
+                {
+                    stabilizationTime += Time.deltaTime;
+
+                    // If the LockGuide has been stable for a certain duration, allow missile firing.
+                    if (stabilizationTime >= stabilizationThreshold)
+                    {
+                        AllowMissileFiring();
+                    }
+                }
+                else
+                {
+                    // Reset the stabilization timer if the LockGuide is not stable.
+                    stabilizationTime = 0f;
+                }
             }
             else
             {
-                // Handle the case when the target is behind the camera.
-                // For example, you can move the LockGuide off-screen or deactivate it.
-                
-                // Move the LockGuide off-screen (assuming a fixed position).
-                //Vector3 offScreenPosition = new Vector3(-1000f, -1000f, 0f);
-                //LockGuide.transform.position = offScreenPosition;
-                
-                // OR
-                
-                // Deactivate the LockGuide.
                 LockGuide.SetActive(false);
             }
         }
+    }
+
+    public void AllowMissileFiring()
+    {
+        Debug.Log("Can fire!");
+    }
+
+    bool IsLockGuideStable(Vector3 currentLockGuidePosition)
+    {
+        // Compare the current position of the LockGuide with its previous position.
+        // If the difference is below a certain threshold, consider it stable.
+        Vector3 previousPosition = LockGuide.transform.position;
+        float positionDifference = Vector3.Distance(currentLockGuidePosition, previousPosition);
+
+        return positionDifference < stabilizationThreshold/10;
     }
 
     public void Respawn()
