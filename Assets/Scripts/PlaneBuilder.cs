@@ -17,7 +17,7 @@ public class PlaneBuilder : NetworkBehaviour
         if (NetworkManager.Singleton.IsServer)
         {
             GameObject parentObject = NetworkManager.Singleton.ConnectedClients[clientId].PlayerObject.gameObject;
-            GenerateWings(parentObject);
+            //GenerateWings(parentObject);
         }
     }
 

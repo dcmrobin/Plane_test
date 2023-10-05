@@ -51,11 +51,11 @@ public class PlanePilot : NetworkBehaviour
     private void Start() {
         mainCam = Camera.main;
         //GameObject.Find("PlaneBuilder").GetComponent<PlaneBuilder>().GenerateWings(gameObject);
-        Invoke("CheckForWings", 2);
+        Invoke("CheckForWings", 3);
     }
     void CheckForWings()
     {
-        if (wings == null && tailfinLow == null && tailfinHigh ==  null)
+        if (curwings == null && curtailLow == null && curtailHigh ==  null)
         {
             if (NetworkManager.Singleton.IsServer)
             {
@@ -337,20 +337,15 @@ public class PlanePilot : NetworkBehaviour
             closestPlayers[index].GetComponent<Outline>().OutlineColor = new Color(100, 0, 0);
             LockGuide.SetActive(true);
             Vector3 targetScreenPosition = cockpitCam.GetComponent<Camera>().WorldToScreenPoint(closestPlayers[index].transform.position);
-            if (targetScreenPosition.z > 0f)
-            {
-                targetScreenPosition.x = Mathf.Clamp01(targetScreenPosition.x);
-                targetScreenPosition.y = Mathf.Clamp01(targetScreenPosition.y);
-            }
-            else
-            {
-                targetScreenPosition.x = -1000;
-                targetScreenPosition.y = -1000;
-            }
+            // Define a padding value to keep some margin from the screen edges.
+            float padding = 10f; // Adjust this value as needed.
 
-            // Convert the modified viewport position back to screen coordinates.
-            targetScreenPosition.x *= Screen.width;
-            targetScreenPosition.y *= Screen.height;
+            // Get the screen boundaries in pixels.
+            Rect screenBounds = new Rect(padding, padding, Screen.width - 2 * padding, Screen.height - 2 * padding);
+
+            // Clamp the targetScreenPosition to be within the screen boundaries.
+            targetScreenPosition.x = Mathf.Clamp(targetScreenPosition.x, screenBounds.x, screenBounds.xMax);
+            targetScreenPosition.y = Mathf.Clamp(targetScreenPosition.y, screenBounds.y, screenBounds.yMax);
             LockGuide.transform.position = targetScreenPosition;
             if (Input.GetKeyDown(KeyCode.L))
             {
