@@ -336,22 +336,45 @@ public class PlanePilot : NetworkBehaviour
         {
             closestPlayers[index].GetComponent<Outline>().OutlineColor = new Color(100, 0, 0);
             LockGuide.SetActive(true);
-            Vector3 targetScreenPosition = cockpitCam.GetComponent<Camera>().WorldToScreenPoint(closestPlayers[index].transform.position);
-            // Define a padding value to keep some margin from the screen edges.
-            float padding = 10f; // Adjust this value as needed.
+           Vector3 targetWorldPosition = closestPlayers[index].transform.position;
 
-            // Get the screen boundaries in pixels.
-            Rect screenBounds = new Rect(padding, padding, Screen.width - 2 * padding, Screen.height - 2 * padding);
+            // Get the camera's forward vector and the direction to the target.
+            Vector3 cameraForward = cockpitCam.transform.forward;
+            Vector3 toTarget = targetWorldPosition - cockpitCam.transform.position;
 
-            // Clamp the targetScreenPosition to be within the screen boundaries.
-            targetScreenPosition.x = Mathf.Clamp(targetScreenPosition.x, screenBounds.x, screenBounds.xMax);
-            targetScreenPosition.y = Mathf.Clamp(targetScreenPosition.y, screenBounds.y, screenBounds.yMax);
-            LockGuide.transform.position = targetScreenPosition;
-            if (Input.GetKeyDown(KeyCode.L))
+            // Check if the target is in front of the camera.
+            float dotProduct = Vector3.Dot(cameraForward, toTarget);
+
+            if (dotProduct > 0)
             {
+                // Convert the target's world position to screen coordinates.
+                Vector3 targetScreenPosition = cockpitCam.GetComponent<Camera>().WorldToScreenPoint(targetWorldPosition);
+
+                // Define a padding value to keep some margin from the screen edges.
+                float padding = 10f; // Adjust this value as needed.
+
+                // Get the screen boundaries in pixels.
+                Rect screenBounds = new Rect(padding, padding, Screen.width - 2 * padding, Screen.height - 2 * padding);
+
+                // Clamp the targetScreenPosition to be within the screen boundaries.
+                targetScreenPosition.x = Mathf.Clamp(targetScreenPosition.x, screenBounds.x, screenBounds.xMax);
+                targetScreenPosition.y = Mathf.Clamp(targetScreenPosition.y, screenBounds.y, screenBounds.yMax);
+
+                LockGuide.transform.position = targetScreenPosition;
+            }
+            else
+            {
+                // Handle the case when the target is behind the camera.
+                // For example, you can move the LockGuide off-screen or deactivate it.
+                
+                // Move the LockGuide off-screen (assuming a fixed position).
+                //Vector3 offScreenPosition = new Vector3(-1000f, -1000f, 0f);
+                //LockGuide.transform.position = offScreenPosition;
+                
+                // OR
+                
+                // Deactivate the LockGuide.
                 LockGuide.SetActive(false);
-                index = 0;
-                lockedOn = false;
             }
         }
     }
