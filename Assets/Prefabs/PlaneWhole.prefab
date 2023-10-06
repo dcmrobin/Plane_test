@@ -110,6 +110,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: db56206bb44260646bb73d029ee44062, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  animationEnded: 0
 --- !u!1 &615174232617131324
 GameObject:
   m_ObjectHideFlags: 0
@@ -1009,6 +1010,9 @@ MonoBehaviour:
   crosshair: {fileID: 1340403276305387926}
   nottargetedSprite: {fileID: 21300000, guid: d48b83729ce9f8b498e06b80f81810fd, type: 3}
   targetedSprite: {fileID: 21300000, guid: b106d72b15c23ee49a2ea91e0d7f085b, type: 3}
+  missilePrefab: {fileID: 6429690610453562489, guid: fe7ec4d583e1ebc4b968e41b59ab11a9, type: 3}
+  missile1: {fileID: 0}
+  missile2: {fileID: 0}
   crashed: 0
   stalled: 0
   shotDown: 0

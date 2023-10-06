@@ -13,6 +13,8 @@ public class PlanePilot : NetworkBehaviour
     //public bool usingTerrain = true;
     [Header("Pilot params")]
     public float speed = 10.0f;
+
+
     [Header("UI")]
     public GameObject statusTitle;
     public GameObject stalledText;
@@ -20,12 +22,24 @@ public class PlanePilot : NetworkBehaviour
     public GameObject crashedText;
     public GameObject respawnButton;
     public GameObject LockGuide;
+
+
     [Header("Gun params")]
     public int gunDamage = 2;
     public LayerMask targetMask;
     public Image crosshair;
     public Sprite nottargetedSprite;
     public Sprite targetedSprite;
+
+
+    [Header("Missile launcher params")]
+    public GameObject missile1;
+    public GameObject missile2;
+    private GameObject[] allPlayers;
+    private List<GameObject> closestPlayers = new List<GameObject>();
+    private int index = 0;
+
+
     [Header("Plane status")]
     public bool crashed;
     public bool stalled;
@@ -33,6 +47,8 @@ public class PlanePilot : NetworkBehaviour
     public bool slowingDown;
     public bool lockedOn;
     RaycastHit hit;
+
+
     [Header("Bits of the plane")]
     public GameObject body;
     public GameObject wings;
@@ -43,10 +59,6 @@ public class PlanePilot : NetworkBehaviour
     public GameObject curtailHigh;
     public GameObject cockpitCam;
     private Camera mainCam;
-
-    private GameObject[] allPlayers;
-    private List<GameObject> closestPlayers = new List<GameObject>();
-    private int index = 0;
 
     private void Start() {
         mainCam = Camera.main;
@@ -371,7 +383,7 @@ public class PlanePilot : NetworkBehaviour
                 {
                     LockGuide.GetComponent<Animator>().SetBool("honed", true);
                     LockGuide.GetComponent<Animator>().SetBool("honeIn", false);
-                    AllowMissileFiring();
+                    //AllowMissileFiring();
                 }
             }
             else
@@ -383,12 +395,26 @@ public class PlanePilot : NetworkBehaviour
 
     public void AllowMissileFiring()
     {
-        Debug.Log("FIRE!");
         if (Input.GetMouseButtonDown(1))
         {
             LockGuide.GetComponent<Animator>().SetBool("honed", false);
             LockGuide.GetComponent<Animator>().SetBool("honeIn", false);
             LockGuide.GetComponent<AnimationAlertObserver>().animationEnded = false;
+
+            if (missile1 != null)
+            {
+                missile1.GetComponent<HomingMissile>().target = closestPlayers[index].transform;
+                missile1.GetComponent<NetworkObject>().TryRemoveParent();
+                missile1.GetComponent<Rigidbody>().isKinematic = false;
+                missile1.GetComponent<HomingMissile>().enabled = true;
+            }
+            else
+            {
+                missile2.GetComponent<HomingMissile>().target = closestPlayers[index].transform;
+                missile2.GetComponent<NetworkObject>().TryRemoveParent();
+                missile2.GetComponent<Rigidbody>().isKinematic = false;
+                missile2.GetComponent<HomingMissile>().enabled = true;
+            }
         }
     }
 

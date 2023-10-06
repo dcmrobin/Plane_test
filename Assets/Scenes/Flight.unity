@@ -3060,6 +3060,7 @@ MonoBehaviour:
   wingsPrefab: {fileID: 7428073235694827560, guid: a8290bffc369d574cb6b4c133086c1cd, type: 3}
   tailfinLowPrefab: {fileID: 5754106175076359949, guid: 747d8227f7f2d014a93e22d872ba3065, type: 3}
   tailfinHighPrefab: {fileID: 1810997001195230625, guid: 844d7401b4a7afb4588414704854f254, type: 3}
+  missilePrefab: {fileID: 6429690610453562489, guid: fe7ec4d583e1ebc4b968e41b59ab11a9, type: 3}
 --- !u!4 &863596303
 Transform:
   m_ObjectHideFlags: 0
