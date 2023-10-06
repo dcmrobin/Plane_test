@@ -47,8 +47,6 @@ public class PlanePilot : NetworkBehaviour
     private GameObject[] allPlayers;
     private List<GameObject> closestPlayers = new List<GameObject>();
     private int index = 0;
-    float stabilizationTime = 0f;
-    float stabilizationThreshold = 5f;
 
     private void Start() {
         mainCam = Camera.main;
@@ -356,7 +354,6 @@ public class PlanePilot : NetworkBehaviour
                 targetScreenPosition.y = Mathf.Clamp(targetScreenPosition.y, screenBounds.y, screenBounds.yMax);
 
                 LockGuide.transform.position = targetScreenPosition;
-                stabilizationTime += Time.deltaTime;
 
                 if (Mathf.Approximately(LockGuide.transform.position.magnitude, cockpitCam.GetComponent<Camera>().WorldToScreenPoint(targetWorldPosition).magnitude))
                 {
@@ -364,20 +361,17 @@ public class PlanePilot : NetworkBehaviour
                 }
                 else
                 {
+                    LockGuide.GetComponent<Animator>().SetBool("honed", false);
                     LockGuide.GetComponent<Animator>().SetBool("honeIn", false);
+                    LockGuide.GetComponent<AnimationAlertObserver>().animationEnded = false;
                 }
 
-                // If the LockGuide has been stable for a certain duration, allow missile firing.
-                if (stabilizationTime >= stabilizationThreshold)
+                // If the LockGuide has been stable for a certain duration, allow missile firing.   stabilizationTime >= stabilizationThreshold
+                if (LockGuide.GetComponent<AnimationAlertObserver>().animationEnded)
                 {
                     LockGuide.GetComponent<Animator>().SetBool("honed", true);
                     LockGuide.GetComponent<Animator>().SetBool("honeIn", false);
                     AllowMissileFiring();
-                }
-                else
-                {
-                    LockGuide.GetComponent<Animator>().SetBool("honed", false);
-                    stabilizationTime = 0f;
                 }
             }
             else
@@ -389,7 +383,13 @@ public class PlanePilot : NetworkBehaviour
 
     public void AllowMissileFiring()
     {
-        //
+        Debug.Log("FIRE!");
+        if (Input.GetMouseButtonDown(1))
+        {
+            LockGuide.GetComponent<Animator>().SetBool("honed", false);
+            LockGuide.GetComponent<Animator>().SetBool("honeIn", false);
+            LockGuide.GetComponent<AnimationAlertObserver>().animationEnded = false;
+        }
     }
 
     public void Respawn()

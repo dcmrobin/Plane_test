@@ -57,6 +57,7 @@
   <ItemGroup>
     <Compile Include="Assets\Scripts\TestRelay.cs" />
     <Compile Include="Assets\Scripts\LobbyController.cs" />
+    <Compile Include="Assets\Scripts\AnimationAlertObserver.cs" />
     <Compile Include="Assets\Scripts\Damageable.cs" />
     <Compile Include="Assets\Scripts\PlaneBuilder.cs" />
     <Compile Include="Assets\Scripts\UIManager.cs" />
