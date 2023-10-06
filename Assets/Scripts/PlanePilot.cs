@@ -356,21 +356,27 @@ public class PlanePilot : NetworkBehaviour
                 targetScreenPosition.y = Mathf.Clamp(targetScreenPosition.y, screenBounds.y, screenBounds.yMax);
 
                 LockGuide.transform.position = targetScreenPosition;
+                stabilizationTime += Time.deltaTime;
 
-                // Check if the LockGuide is stable.
-                if (IsLockGuideStable(cockpitCam.GetComponent<Camera>().WorldToScreenPoint(targetWorldPosition)))
+                if (Mathf.Approximately(LockGuide.transform.position.magnitude, cockpitCam.GetComponent<Camera>().WorldToScreenPoint(targetWorldPosition).magnitude))
                 {
-                    stabilizationTime += Time.deltaTime;
-
-                    // If the LockGuide has been stable for a certain duration, allow missile firing.
-                    if (stabilizationTime >= stabilizationThreshold)
-                    {
-                        AllowMissileFiring();
-                    }
+                    LockGuide.GetComponent<Animator>().SetBool("honeIn", true);
                 }
                 else
                 {
-                    // Reset the stabilization timer if the LockGuide is not stable.
+                    LockGuide.GetComponent<Animator>().SetBool("honeIn", false);
+                }
+
+                // If the LockGuide has been stable for a certain duration, allow missile firing.
+                if (stabilizationTime >= stabilizationThreshold)
+                {
+                    LockGuide.GetComponent<Animator>().SetBool("honed", true);
+                    LockGuide.GetComponent<Animator>().SetBool("honeIn", false);
+                    AllowMissileFiring();
+                }
+                else
+                {
+                    LockGuide.GetComponent<Animator>().SetBool("honed", false);
                     stabilizationTime = 0f;
                 }
             }
@@ -383,17 +389,7 @@ public class PlanePilot : NetworkBehaviour
 
     public void AllowMissileFiring()
     {
-        Debug.Log("Can fire!");
-    }
-
-    bool IsLockGuideStable(Vector3 currentLockGuidePosition)
-    {
-        // Compare the current position of the LockGuide with its previous position.
-        // If the difference is below a certain threshold, consider it stable.
-        Vector3 previousPosition = LockGuide.transform.position;
-        float positionDifference = Vector3.Distance(currentLockGuidePosition, previousPosition);
-
-        return positionDifference < stabilizationThreshold/10;
+        //
     }
 
     public void Respawn()
