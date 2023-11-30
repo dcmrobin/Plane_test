@@ -104,29 +104,20 @@ public class WorldGenerator : MonoBehaviour
         mesh.triangles = triangles;
 
         AssignMaterials(meshRenderer, startX, startZ);
-
-        meshRenderer.material = defaultMaterial;
     }
 
     void AssignMaterials(MeshRenderer meshRenderer, int x, int z)
     {
-        if (x == worldSize * chunkSize / 2 && z == worldSize * chunkSize / 2)
+        float groundNoise = Mathf.PerlinNoise(x * groundLayerScale * 0.1f, z * groundLayerScale * 0.1f);
+        float mountainNoise = Mathf.PerlinNoise(x * mountainLayerScale * 0.1f, z * mountainLayerScale * 0.1f);
+
+        if (groundNoise > mountainNoise)
         {
-            // Center of the world, assign mountain material
-            meshRenderer.material = mountainMaterial;
+            meshRenderer.material = defaultMaterial;
         }
         else
         {
-            // Apply different materials based on terrain properties
-            float height = CalculateTerrainHeight(x, z, groundLayerScale) + CalculateTerrainHeight(x, z, mountainLayerScale, mountainHeightScale) - CalculateTerrainHeight(x, z, chasmScale, chasmHeight);
-            if (height > terrainHeightScale * 2.5f)
-            {
-                meshRenderer.material = mountainMaterial;
-            }
-            else
-            {
-                meshRenderer.material = defaultMaterial;
-            }
+            meshRenderer.material = mountainMaterial;
         }
     }
 

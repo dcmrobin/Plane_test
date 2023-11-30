@@ -606,7 +606,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 130f42001f669ed429e484400cd6110b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  worldSize: 10
+  worldSize: 100
   chunkSize: 10
   terrainHeightScale: 5
   groundLayerScale: 0.2
