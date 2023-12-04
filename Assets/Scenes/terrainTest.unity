@@ -588,7 +588,7 @@ Transform:
   m_GameObject: {fileID: 1173569602}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -28.199137, y: 9.527323, z: 6.481045}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -606,11 +606,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 130f42001f669ed429e484400cd6110b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  worldSize: 100
-  chunkSize: 10
+  worldSize: 10
+  chunkSize: 100
   terrainHeightScale: 5
-  groundLayerScale: 0.2
-  mountainLayerScale: 0.04
+  groundLayerScale: 2
+  mountainLayerScale: 0.01
+  additionalLayerScale: 0.01
+  additionalLayerHeightScale: 20
   defaultMaterial: {fileID: 2100000, guid: 038cdcf0ed362514e9c82f511f6fbbb3, type: 2}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:

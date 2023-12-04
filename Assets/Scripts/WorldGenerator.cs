@@ -7,6 +7,8 @@ public class WorldGenerator : MonoBehaviour
     public float terrainHeightScale = 5f;
     public float groundLayerScale = 0.1f;
     public float mountainLayerScale = 0.02f;
+    public float additionalLayerScale = 0.03f; // Adjust this for the new layer
+    public float additionalLayerHeightScale = 2f; // Adjust this for the new layer
     public Material defaultMaterial;
 
     private void Start()
@@ -112,15 +114,16 @@ public class WorldGenerator : MonoBehaviour
                 // Add some variation to the terrain by multiplying with a factor
                 float heightVariation = Mathf.PerlinNoise((startX + x) * 0.1f, (startZ + z) * 0.1f) * 2f;
 
-                if (groundNoise > mountainNoise)
-                {
-                    heights[x, z] = terrainHeightScale + heightVariation; // Set height for high terrain with variation
-                }
-                else
-                {
-                    heights[x, z] = heightVariation; // Set height for flat terrain with variation
-                }
+                // Smoothly blend between heights
+                float t = Mathf.InverseLerp(groundNoise, mountainNoise, Mathf.PerlinNoise((startX + x) * 0.05f, (startZ + z) * 0.05f));
+                float blendedHeight = Mathf.Lerp(heightVariation, terrainHeightScale + heightVariation, t);
+
+                // Apply additional layer on top of high terrain
+                float additionalLayerNoise = Mathf.PerlinNoise((startX + x) * additionalLayerScale, (startZ + z) * additionalLayerScale);
+                float additionalLayerHeight = additionalLayerNoise * additionalLayerHeightScale;
+
+                heights[x, z] = Mathf.Max(blendedHeight, blendedHeight + additionalLayerHeight);
             }
-    }
+        }
     }
 }
