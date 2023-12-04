@@ -611,11 +611,7 @@ MonoBehaviour:
   terrainHeightScale: 5
   groundLayerScale: 0.2
   mountainLayerScale: 0.04
-  chasmScale: 0.08
-  chasmHeight: 10
-  mountainHeightScale: 20
   defaultMaterial: {fileID: 2100000, guid: 038cdcf0ed362514e9c82f511f6fbbb3, type: 2}
-  mountainMaterial: {fileID: 2100000, guid: 3fc815a5ccec5744586188a421d1535a, type: 2}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

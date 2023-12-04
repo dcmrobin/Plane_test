@@ -7,11 +7,7 @@ public class WorldGenerator : MonoBehaviour
     public float terrainHeightScale = 5f;
     public float groundLayerScale = 0.1f;
     public float mountainLayerScale = 0.02f;
-    public float chasmScale = 0.03f;
-    public float chasmHeight = 5f;
-    public float mountainHeightScale = 2f;
     public Material defaultMaterial;
-    public Material mountainMaterial;
 
     private void Start()
     {
@@ -53,17 +49,15 @@ public class WorldGenerator : MonoBehaviour
         Vector3[] vertices = new Vector3[(chunkSize + 1) * (chunkSize + 1)];
         int[] triangles = new int[chunkSize * chunkSize * 6];
 
+        float[,] heights = new float[chunkSize + 1, chunkSize + 1];
+
+        AssignHeights(heights, startX, startZ);
+
         for (int x = 0; x <= chunkSize; x++)
         {
             for (int z = 0; z <= chunkSize; z++)
             {
-                float groundHeight = CalculateTerrainHeight(startX + x, startZ + z, groundLayerScale);
-                float mountainHeight = CalculateTerrainHeight(startX + x, startZ + z, mountainLayerScale, mountainHeightScale);
-                float chasmDepth = CalculateTerrainHeight(startX + x, startZ + z, chasmScale, chasmHeight);
-
-                float height = groundHeight + mountainHeight - chasmDepth;
-
-                vertices[x * (chunkSize + 1) + z] = new Vector3(startX + x, height, startZ + z);
+                vertices[x * (chunkSize + 1) + z] = new Vector3(startX + x, heights[x, z], startZ + z);
             }
         }
 
@@ -103,31 +97,30 @@ public class WorldGenerator : MonoBehaviour
 
         mesh.triangles = triangles;
 
-        AssignMaterials(meshRenderer, startX, startZ);
+        meshRenderer.material = defaultMaterial; // You can assign a material here if needed
     }
 
-    void AssignMaterials(MeshRenderer meshRenderer, int x, int z)
+    void AssignHeights(float[,] heights, int startX, int startZ)
     {
-        float groundNoise = Mathf.PerlinNoise(x * groundLayerScale * 0.1f, z * groundLayerScale * 0.1f);
-        float mountainNoise = Mathf.PerlinNoise(x * mountainLayerScale * 0.1f, z * mountainLayerScale * 0.1f);
-
-        if (groundNoise > mountainNoise)
+        for (int x = 0; x <= chunkSize; x++)
         {
-            meshRenderer.material = defaultMaterial;
-        }
-        else
-        {
-            meshRenderer.material = mountainMaterial;
-        }
-    }
+            for (int z = 0; z <= chunkSize; z++)
+            {
+                float groundNoise = Mathf.PerlinNoise((startX + x) * groundLayerScale, (startZ + z) * groundLayerScale);
+                float mountainNoise = Mathf.PerlinNoise((startX + x) * mountainLayerScale, (startZ + z) * mountainLayerScale);
 
-    float CalculateTerrainHeight(int x, int z, float scale)
-    {
-        return Mathf.PerlinNoise(x * scale, z * scale) * terrainHeightScale;
-    }
+                // Add some variation to the terrain by multiplying with a factor
+                float heightVariation = Mathf.PerlinNoise((startX + x) * 0.1f, (startZ + z) * 0.1f) * 2f;
 
-    float CalculateTerrainHeight(int x, int z, float scale, float heightScale)
-    {
-        return Mathf.PerlinNoise(x * scale, z * scale) * heightScale;
+                if (groundNoise > mountainNoise)
+                {
+                    heights[x, z] = terrainHeightScale + heightVariation; // Set height for high terrain with variation
+                }
+                else
+                {
+                    heights[x, z] = heightVariation; // Set height for flat terrain with variation
+                }
+            }
+    }
     }
 }
